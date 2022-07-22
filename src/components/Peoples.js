@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Row } from 'react-bootstrap';
+import People from './People';
 
 const Peoples = () => {
     const [peoples, setPeoples] = useState([]);
-    const [url, setUrl] = useState("");
-    const [pageCount, setPageCount] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
     const [page, setPage] = useState(1);
+    const [nextBtnDisable, setNextBtnDisable] = useState(false);
+    const [previousBtnDisable, setPreviousBtnDisable] = useState(false);
 
 
 
@@ -16,27 +19,65 @@ const Peoples = () => {
             const data = await res.json();
             const count = data.count;
             const pages = Math.ceil(count / 10);
-            setPageCount(pages);
+            setTotalPage(pages);
             setPeoples(data.results);
         }
 
         fetchData()
 
-            .catch(console.error);;
+            .catch(console.error);
     }, [page])
+
+
+    const pageBtn = (number) => {
+        setPage(number + 1);
+        setNextBtnDisable(false);
+        setPreviousBtnDisable(false);
+    }
+
+    const next = () => {
+        if (page >= totalPage) {
+            console.log(page);
+            setNextBtnDisable(true);
+        } else {
+            setPage(page + 1);
+        }
+    }
+
+    const previous = () => {
+        if (page <= 1) {
+            setPreviousBtnDisable(true);
+            console.log(page);
+        } else {
+            setPage(page - 1);
+            console.log(page);
+        }
+    }
+
 
 
 
     return (
-        <div>
-            <h2>this is people {peoples[0]?.name} </h2>
+        <div className='p-5' >
+            <h2 className='text-danger text-center' >Leadzen</h2>
+
             <div>
-                <div className="btn btn-success">prev</div>
+                <h2 className="text-center">The info of peoples</h2>
                 {
-                    [...Array(pageCount).keys()]
-                        .map(number => <button onClick={() => setPage(number + 1)} className={page === number + 1 ? 'btn btn-warning ms-1' : 'btn btn-primary ms-1'} >{number + 1}</button>)
+                    <Row className="g-4">
+                        {
+                            peoples.map((people, index) => <People key={index} people={people} ></People>)
+                        }
+                    </Row>
                 }
-                <div className="btn btn-success">Next</div>
+            </div>
+            <div className='p-5 text-center' >
+                <div disabled={previousBtnDisable} onClick={previous} className="btn btn-white">&lt;</div>
+                {
+                    [...Array(totalPage).keys()]
+                        .map(number => <button key={number} onClick={() => pageBtn(number)} className={page === number + 1 ? 'btn btn-danger ms-1' : 'btn btn-white ms-1'} >{number + 1}</button>)
+                }
+                <button disabled={nextBtnDisable} onClick={next} className="btn btn-white ms-1">&gt;</button>
             </div>
         </div>
     );
