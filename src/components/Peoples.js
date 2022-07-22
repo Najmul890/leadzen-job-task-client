@@ -6,21 +6,22 @@ const Peoples = () => {
     const [peoples, setPeoples] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [page, setPage] = useState(1);
-    const [nextBtnDisable, setNextBtnDisable] = useState(false);
-    const [previousBtnDisable, setPreviousBtnDisable] = useState(false);
+    
+    
 
 
 
     useEffect(() => {
 
         const fetchData = async () => {
-
+            
             const res = await fetch(`https://swapi.dev/api/people?page=${page}`);
             const data = await res.json();
             const count = data.count;
             const pages = Math.ceil(count / 10);
             setTotalPage(pages);
             setPeoples(data.results);
+            
         }
 
         fetchData()
@@ -31,38 +32,31 @@ const Peoples = () => {
 
     const pageBtn = (number) => {
         setPage(number + 1);
-        setNextBtnDisable(false);
-        setPreviousBtnDisable(false);
+        
     }
 
     const next = () => {
-        if (page >= totalPage) {
-            console.log(page);
-            setNextBtnDisable(true);
-        } else {
-            setPage(page + 1);
+        if(page<totalPage){
+            setPage(page+1);
         }
     }
 
     const previous = () => {
-        if (page <= 1) {
-            setPreviousBtnDisable(true);
-            console.log(page);
-        } else {
-            setPage(page - 1);
-            console.log(page);
+        if (page>1) {
+            setPage(page-1);
         }
     }
 
+    
 
 
 
     return (
         <div className='p-5' >
-            <h2 className='text-danger text-center' >Leadzen</h2>
+            <h2 className='text-danger text-center mb-3' >Leadzen</h2>
 
             <div>
-                <h2 className="text-center">The info of peoples</h2>
+                <h2 className="text-center mb-3">The info of peoples</h2>
                 {
                     <Row className="g-4">
                         {
@@ -72,12 +66,12 @@ const Peoples = () => {
                 }
             </div>
             <div className='p-5 text-center' >
-                <div disabled={previousBtnDisable} onClick={previous} className="btn btn-white">&lt;</div>
+                <div onClick={previous} className="btn btn-white">&lt;</div>
                 {
                     [...Array(totalPage).keys()]
                         .map(number => <button key={number} onClick={() => pageBtn(number)} className={page === number + 1 ? 'btn btn-danger ms-1' : 'btn btn-white ms-1'} >{number + 1}</button>)
                 }
-                <button disabled={nextBtnDisable} onClick={next} className="btn btn-white ms-1">&gt;</button>
+                <button onClick={next} className="btn btn-white ms-1">&gt;</button>
             </div>
         </div>
     );
